@@ -2,14 +2,21 @@
   <div id="app">
     <TopPartTodo v-bind:isAllCompleted="isAllCompleted" v-bind:add-task="addTask" v-bind:toogleAllSelect="toogleAllSelect" />
 
-    <Tasks v-bind:tasks="tasks" v-bind:deleteTask="deleteTask" />
+    <Tasks
+    v-bind:correctedTaskId="correctedTaskId"
+    v-bind:tasks="tasks"
+    v-bind:deleteTask="deleteTask"
+    v-bind:correctTask="correctTask"
+    v-bind:chooseTaskForCorrect="chooseTaskForCorrect"
+    />
   </div>
 </template>
 
 <script>
 import TopPartTodo from './components/TopPartTodo.vue';
 import Tasks from './components/Tasks.vue';
-import Vue from 'vue';
+
+const NOONE_TASK_CORRECTED = -1;
 
 export default {
   name: 'app',
@@ -18,7 +25,8 @@ export default {
     return {
       lastId: 1,
       tasks: [],
-      isAllCompleted: false
+      isAllCompleted: false,
+      correctedTaskId: NOONE_TASK_CORRECTED
     };
   },
 
@@ -45,6 +53,24 @@ export default {
 
         return task;
       });
+    },
+
+    chooseTaskForCorrect: function(taskId) {
+      this.correctedTaskId = taskId;
+    },
+
+    correctTask: function(newTaskName) {
+      const { correctedTaskId } = this;
+
+      this.tasks = this.tasks.map(task => {
+        if (task.id === correctedTaskId) {
+          task.name = newTaskName;
+        }
+
+        return task;
+      });
+
+      this.correctedTaskId = NOONE_TASK_CORRECTED;
     }
   }
 };
